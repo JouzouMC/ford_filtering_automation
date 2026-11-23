@@ -48,3 +48,21 @@ def save_spreadsheet_url(monday_str: str, url: str) -> None:
         old_links = pd.read_csv(SPREADSHEET_LINKS_PATH, dtype=str)
         links = pd.concat([old_links[old_links["week"] != monday_str], links], ignore_index=True)
     links.sort_values("week").to_csv(SPREADSHEET_LINKS_PATH, index=False)
+
+def get_new_model_url(monday_str: str) -> str | None:
+    """URL of the week's new-model sheet (the copy filled by new_model_sheet.py), or None if it has none."""
+    if not SPREADSHEET_LINKS_PATH.exists():
+        return None
+    links = pd.read_csv(SPREADSHEET_LINKS_PATH, dtype=str)
+    if "new_model_url" not in links:
+        return None
+    hit = links.loc[links["week"] == monday_str, "new_model_url"].dropna()
+    return hit.iloc[-1] if len(hit) else None
+
+def save_new_model_url(monday_str: str, url: str) -> None:
+    """Record the week's new-model sheet next to its default sheet (the week's row must already exist)."""
+    links = pd.read_csv(SPREADSHEET_LINKS_PATH, dtype=str)
+    if "new_model_url" not in links:
+        links["new_model_url"] = pd.NA
+    links.loc[links["week"] == monday_str, "new_model_url"] = url
+    links.to_csv(SPREADSHEET_LINKS_PATH, index=False)

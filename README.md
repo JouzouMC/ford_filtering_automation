@@ -24,9 +24,9 @@ This script performs the following operations:
     - Combines the masks with a logical OR, filters weekly_data with this mask, and adds 'vehicle_ownership_status' and 'ownership_count' columns (ownership_count declares how many vehicles in our set the author owns)
     - Pastes this data into the vehicle's corresponding Google Sheets tab, and hides the columns not included in VISIBLE_COLS
 
-## new_pipeline_columns.py
-Runs last. Reads the week's results of the platform's trained-tagging pipeline from S3 and adds five columns right after each vehicle tab's Validation column: New autovalidation (Hit/Maybe/Miss), New tags, New: this tag? (whether the new pipeline also has the row's tag, and with what sentiment), New ownership and New country.
-If the results are not in S3 yet it waits (up to 90 minutes by default), then leaves the sheet as it is. Tabs that already have the columns are skipped, so it can be rerun on its own: `python weekly_processing/new_pipeline_columns.py --week {monday date}`.
+## new_model_sheet.py
+Runs last. Makes the week's second sheet, `For report_{monday date} (new model)`: a copy of the week's sheet in which every vehicle tab carries the platform's trained-tagging pipeline values (read from S3) instead of the old pipeline's: country_code, ownership_status, validation_auto (Hit/Maybe/Miss, or "Not in tab"), and the tags with their sentiment. Confidence and reasoning are cleared. A post's rows are reused for its new tags; extra tags get a copy of the post's last row, and rows left over are deleted. Posts the new pipeline did not tag keep their rows. The default sheet is not changed.
+The copy goes in the same Drive folder, is shared with the service account, and its link is saved in `spreadsheet_links.csv` (column `new_model_url`). If the results are not in S3 yet it waits (up to 90 minutes by default), then makes no copy. A tab that fails to write is put back with the old values and named at the end. Rerun on its own: `python weekly_processing/new_model_sheet.py --week {monday date}` (`--force` makes a fresh copy if the week already has one).
 AWS read credentials for the results are stored in the .env file.
 
 The following scripts are also included: 

@@ -10,7 +10,7 @@ from get_ownership_database import main as run_ownership_db
 from add_facebook_names import main as run_add_facebook_names
 from google_sheet_editing import main as run_google_sheet_editing
 from autovalidation import main as run_autovalidation
-from new_pipeline_columns import main as run_new_pipeline_columns
+from new_model_sheet import main as run_new_model_sheet
 
 steps = [
     ("move_files", run_move_files),
@@ -18,7 +18,7 @@ steps = [
     ("add_facebook_names", run_add_facebook_names),
     ("google_sheet_editing", run_google_sheet_editing), 
     ("autovalidation", run_autovalidation),
-    ("new_pipeline_columns", run_new_pipeline_columns),  # last: autovalidation rewrites whole tabs
+    ("new_model_sheet", run_new_model_sheet),  # last: copies the sheet autovalidation has filled
 ]
 
 for name, fn in steps:
